@@ -7,7 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import FieldCell from "./FieldCell";
 import PropTypes from "prop-types";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector /*useDispatch */ } from "react-redux";
 
 // import BombImg from "../img/bomb.svg";
 // import CaptainImg from "../img/captain.svg";
@@ -41,10 +41,10 @@ function GameField(props) {
   const { classes, row, col, type } = props;
   let items = [];
   let items2;
-  const fields = useSelector((state) => state.fields);
+  // const fields = useSelector((state) => state.fields);
   const soldiers = useSelector((state) => state.soldiers);
-  const game = useSelector((state) => state.game);
-  const dispatch = useDispatch();
+  // const game = useSelector((state) => state.game);
+  // const dispatch = useDispatch();
   let isSoldier = false;
   let sold;
   for (let y = 0; y < row; y++) {
