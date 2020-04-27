@@ -7,20 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import FieldCell from "./FieldCell";
 import PropTypes from "prop-types";
-import { useSelector /*useDispatch */ } from "react-redux";
-
-// import BombImg from "../img/bomb.svg";
-// import CaptainImg from "../img/captain.svg";
-// import ColonelImg from "../img/colonel.svg";
-// import FlagImg from "../img/flag.svg";
-// import GeneralyImg from "../img/general.svg";
-// import LieutenantImg from "../img/lieutenant.svg";
-// import MajorImg from "../img/major.svg";
-// import MarshalImg from "../img/marshal.svg";
-// import MinerImg from "../img/miner.svg";
-// import ScoutImg from "../img/scout.svg";
-// import SergeantImg from "../img/sergeant.svg";
-// import SpyImg from "../img/spy.svg";
+import { useSelector } from "react-redux";
 
 const classes = {
   table: {
@@ -36,24 +23,17 @@ const classes = {
     minHeight: 80,
   },
 };
-
-function GameField(props) {
-  const { classes, row, col, type } = props;
+function generateTableBody(soldiers, row, col, type, cellBonus, game) {
   let items = [];
   let items2;
-  // const fields = useSelector((state) => state.fields);
-  const soldiers = useSelector((state) => state.soldiers);
-  // const game = useSelector((state) => state.game);
-  // const dispatch = useDispatch();
   let isSoldier = false;
-  let sold;
-  for (let y = 0; y < row; y++) {
+  let sold = null;
+  for (let x = cellBonus; x < row + cellBonus; x++) {
     items2 = [];
-    sold = null;
-    isSoldier = false;
 
-    for (let x = 0; x < col; x++) {
-      if (type === "zone") {
+    for (let y = cellBonus; y < col + cellBonus; y++) {
+      if (cellBonus || game.status) {
+        // eslint-disable-next-line
         soldiers.forEach((element) => {
           if (element.y === y) {
             if (element.x === x) {
@@ -73,6 +53,8 @@ function GameField(props) {
             className={classes.cell}
             key={x + " " + y}
             lvl={sold.level}
+            owner={sold.owner}
+            isOwned={true}
           ></FieldCell>
         );
       } else {
@@ -83,12 +65,24 @@ function GameField(props) {
             y={y}
             className={classes.cell}
             key={x + " " + y}
+            isOwned={false}
           ></FieldCell>
         );
       }
+      sold = null;
+      isSoldier = false;
     }
-    items.push(<TableRow key={y}>{items2}</TableRow>);
+    items.push(<TableRow key={x}>{items2}</TableRow>);
   }
+  return items;
+}
+function GameField(props) {
+  const { classes, row, col, type, cellBonus } = props;
+
+  const soldiers = useSelector((state) => state.soldiers);
+  const game = useSelector((state) => state.game);
+  const items = generateTableBody(soldiers, row, col, type, cellBonus, game);
+
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
@@ -101,4 +95,6 @@ export default withStyles(classes)(GameField);
 GameField.propTypes = {
   row: PropTypes.number.isRequired,
   col: PropTypes.number.isRequired,
+  cellBonus: PropTypes.number.isRequired,
+  type: PropTypes.string.isRequired,
 };

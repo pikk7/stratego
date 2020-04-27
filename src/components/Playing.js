@@ -1,24 +1,29 @@
 import React from "react";
 import GameField from "./GameField";
-// import PropTypes from "prop-types";
+import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 
-// const classes = {
-//   button: {
-//     background: "grey",
-//     border: 0,
-//     borderRadius: 3,
-//     boxShadow: "0 3px 5px 2px rgba(0,0, 0 .3)",
-//     color: "white",
-//     height: 48,
-//     padding: "0 30px",
-//     margin: "30px",
-//   },
-// };
 export default function Playing() {
+  const game = useSelector((state) => state.game);
   return (
     <>
-      <GameField type={"play"} row={6} col={6}></GameField>
+      {game.status === "playing" && (
+        <>
+          <strong>{game.currentPlayer} player</strong>
+          <GameField cellBonus={0} type={"play"} row={6} col={6}></GameField>
+        </>
+      )}
+
+      {game.status === "end" && (
+        <strong>{game.currentPlayer} is the winner</strong>
+      )}
     </>
   );
 }
-// export default withStyles(classes)(PrepareGame);
+
+Playing.propTypes = {
+  row: PropTypes.number.isRequired,
+  col: PropTypes.number.isRequired,
+  cellBonus: PropTypes.number.isRequired,
+  type: PropTypes.string.isRequired,
+};

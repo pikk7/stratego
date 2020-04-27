@@ -4,7 +4,7 @@ export const GAME_OVER = "GAME_OVER";
 export const NEXT_PLAYER = "NEXT_PLAYER";
 export const SELECT_CELL = "SELECT_CELL";
 export const SELECT_SOLDIER = "SELECT_SOLDIER";
-
+export const GAME_STATUS_CHANGE = "GAME_STATUS_CHANGE";
 //action creators
 export function fight(state, attacker, defender) {
   return {
@@ -41,5 +41,12 @@ export function selectSoldier(state, id) {
   return {
     type: SELECT_SOLDIER,
     payload: { state: state, id: id },
+  };
+}
+
+export function gameStatusChange(state, status) {
+  return {
+    type: GAME_STATUS_CHANGE,
+    payload: { state: state, status: status },
   };
 }

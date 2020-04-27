@@ -22,6 +22,7 @@ function getRoomNum(min, max) {
 }
 function Lobby(props) {
   const { classes } = props;
+
   return (
     <>
       <h1>{getRoomNum(0, 999)}</h1>

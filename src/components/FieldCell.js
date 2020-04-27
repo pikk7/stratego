@@ -1,6 +1,6 @@
 import React from "react";
 import TableCell from "@material-ui/core/TableCell";
-import { selectCell, selectSoldier } from "../actions";
+import { selectSoldier, move, fight } from "../actions";
 import { useSelector, useDispatch } from "react-redux";
 import BombImg from "../img/bomb.svg";
 import CaptainImg from "../img/captain.svg";
@@ -14,6 +14,8 @@ import MinerImg from "../img/miner.svg";
 import ScoutImg from "../img/scout.svg";
 import SergeantImg from "../img/sergeant.svg";
 import SpyImg from "../img/spy.svg";
+import question from "../img/question.png";
+
 const classes = {
   table: {
     minWidth: 800,
@@ -43,36 +45,57 @@ const arrayOfImg = [
   BombImg, //11
 ];
 export default function FieldCell(props) {
-  const { x, y, lvl, type } = props;
-  // const { x, y, steps, id } = props;
+  const { x, y, lvl, isOwned, owner } = props;
   const dispatch = useDispatch();
-  const fields = useSelector((state) => state.fields);
   const soldiers = useSelector((state) => state.soldiers);
+  const game = useSelector((state) => state.game);
 
   const handleClick = (e) => {
     e.preventDefault();
-    // console.log(x);
-    // console.log(y);
-    let id;
-    var isSelectCell = true;
+    // console.log(game);
+
+    let clickedsoldier;
+
     soldiers.forEach((element) => {
       if (element.x === x) {
         if (element.y === y) {
-          isSelectCell = false;
-          id = element.id;
+          clickedsoldier = element;
         }
       }
     });
-    if (isSelectCell) {
-      dispatch(selectCell(fields, type, x, y));
+    if (isOwned) {
+      if (game.id) {
+        if (clickedsoldier.owner !== game.currentPlayer) {
+          let attacker = soldiers.find((element) => element.id === game.id);
+          dispatch(fight(soldiers, attacker, clickedsoldier));
+        }
+      } else {
+        dispatch(selectSoldier(soldiers, clickedsoldier.id));
+      }
     } else {
-      dispatch(selectSoldier(soldiers, id));
+      if (game.id) {
+        if (game.status === "prepare") {
+          if (x === game.row - 2 || x === game.row - 1) {
+            dispatch(move(soldiers, game.id, x, y));
+          }
+        } else {
+          dispatch(move(soldiers, game.id, x, y));
+        }
+      }
     }
   };
   return (
     <TableCell onClick={handleClick} style={classes.cell}>
       {lvl !== undefined && (
-        <img height="150" width="100" src={arrayOfImg[lvl]} alt={lvl} />
+        <div>
+          <img
+            height="150"
+            width="100"
+            src={game.currentPlayer === owner ? arrayOfImg[lvl] : question}
+            alt={game.currentPlayer === owner ? lvl : "?"}
+          />
+          <strong>{game.currentPlayer === owner ? lvl : "?"}</strong>
+        </div>
       )}
     </TableCell>
   );
