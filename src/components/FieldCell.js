@@ -1,6 +1,6 @@
 import React from "react";
 import TableCell from "@material-ui/core/TableCell";
-import { selectSoldier, move, fight } from "../actions";
+import { selectSoldier, move, fight, gameStatusChange } from "../actions";
 import { useSelector, useDispatch } from "react-redux";
 import BombImg from "../img/bomb.svg";
 import CaptainImg from "../img/captain.svg";
@@ -68,18 +68,28 @@ export default function FieldCell(props) {
         if (clickedsoldier.owner !== game.currentPlayer) {
           let attacker = soldiers.find((element) => element.id === game.id);
           dispatch(fight(soldiers, attacker, clickedsoldier));
+          setTimeout(() => {
+            dispatch(gameStatusChange(game, "playing"));
+          }, 3000);
         }
       } else {
         dispatch(selectSoldier(soldiers, clickedsoldier.id));
       }
     } else {
       if (game.id) {
+        let clickedsoldx, clickedsoldy;
+        soldiers.forEach((element) => {
+          if (element.id === game.id) {
+            clickedsoldx = element.x;
+            clickedsoldy = element.y;
+          }
+        });
         if (game.status === "prepare") {
           if (x === game.row - 2 || x === game.row - 1) {
-            dispatch(move(soldiers, game.id, x, y));
+            dispatch(move(soldiers, game.id, x, y, clickedsoldx, clickedsoldy));
           }
         } else {
-          dispatch(move(soldiers, game.id, x, y));
+          dispatch(move(soldiers, game.id, x, y, clickedsoldx, clickedsoldy));
         }
       }
     }

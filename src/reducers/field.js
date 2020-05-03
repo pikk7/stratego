@@ -46,13 +46,25 @@ const fields = (state = fieldData, action) => {
     return fieldData;
   }
   if (type === MOVE) {
-    return moveSoldier(state, payload.x, payload.y);
+    return moveSoldier(
+      state,
+      payload.x,
+      payload.y,
+      payload.clickedx,
+      payload.clickedy
+    );
   }
   return state;
 };
 
-function moveSoldier(fields, x, y) {
+function moveSoldier(fields, x, y, clickedx, clickedy) {
   return fields.map((el) => {
+    if (el.x === clickedx) {
+      if (el.y === clickedy)
+        return Object.assign({}, el, {
+          isOwned: false,
+        });
+    }
     if (el.x === x) {
       if (el.y === y)
         return Object.assign({}, el, {

@@ -13,8 +13,18 @@ export function fight(state, attacker, defender) {
   };
 }
 
-export function move(state, id, x, y) {
-  return { type: MOVE, payload: { state: state, id: id, x: x, y: y } };
+export function move(state, id, x, y, clickedx, clickedy) {
+  return {
+    type: MOVE,
+    payload: {
+      state: state,
+      id: id,
+      x: x,
+      y: y,
+      clickedx: clickedx,
+      clickedy: clickedy,
+    },
+  };
 }
 
 export function startAgain() {

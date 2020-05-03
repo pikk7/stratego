@@ -14,6 +14,10 @@ export const gameData = {
   status: null,
   col: 6,
   row: 6,
+  attacker: "",
+  defender: "",
+  playerOneGraveyard: [],
+  playerTwoGraveyard: [],
 };
 
 const game = (state = gameData, action) => {
@@ -36,7 +40,7 @@ const game = (state = gameData, action) => {
     case MOVE:
       return gameMove(state);
     case FIGHT:
-      return gameFight(state);
+      return gameFight(state, payload.attacker, payload.defender);
     default:
       return state;
   }
@@ -65,6 +69,8 @@ function gameOver(state) {
 function gameStatusChange(state, status) {
   return Object.assign({}, state, {
     status: status,
+    defender: "",
+    attacker: "",
   });
 }
 
@@ -81,11 +87,61 @@ function gameMove(state) {
   }
 }
 
-function gameFight(state) {
-  return Object.assign({}, state, {
-    id: "",
-    currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
-  });
+function gameFight(state, attacker, defender) {
+  /**
+   * TODO: a specialis karakterek lekezelese
+   */
+  let die1 = null;
+  let die2 = null;
+  if (state.currentPlayer === "1") {
+    if (attacker.level > defender.level) {
+      die2 = defender;
+    } else if (attacker.level < defender.level) {
+      die1 = attacker;
+    } else {
+      die1 = attacker;
+      die2 = defender;
+    }
+  } else {
+    if (attacker.level > defender.level) {
+      die1 = defender;
+    } else if (attacker.level < defender.level) {
+      die2 = attacker;
+    } else {
+      die2 = attacker;
+      die1 = defender;
+    }
+  }
+
+  if (die1 && die2) {
+    return Object.assign({}, state, {
+      attacker: attacker,
+      defender: defender,
+      id: "",
+      status: "fighting",
+      currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
+      playerOneGraveyard: [...state.playerOneGraveyard, die1],
+      playerTwoGraveyard: [...state.playerTwoGraveyard, die2],
+    });
+  } else if (die2) {
+    return Object.assign({}, state, {
+      attacker: attacker,
+      defender: defender,
+      id: "",
+      status: "fighting",
+      currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
+      playerTwoGraveyard: [...state.playerTwoGraveyard, die2],
+    });
+  } else if (die1) {
+    return Object.assign({}, state, {
+      attacker: attacker,
+      defender: defender,
+      id: "",
+      status: "fighting",
+      currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
+      playerOneGraveyard: [...state.playerOneGraveyard, die1],
+    });
+  }
 }
 
 export default game;

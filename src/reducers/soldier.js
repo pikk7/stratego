@@ -128,7 +128,14 @@ const soldiers = (state = soldiersData, action) => {
     case FIGHT:
       return fightFunction(state, payload.attacker, payload.defender);
     case MOVE:
-      return moveSoldier(state, payload.id, payload.x, payload.y);
+      return moveSoldier(
+        state,
+        payload.id,
+        payload.x,
+        payload.y,
+        payload.clickedx,
+        payload.clickedy
+      );
     case GAME_OVER:
       return soldiersData;
     default:
@@ -137,7 +144,7 @@ const soldiers = (state = soldiersData, action) => {
 };
 
 //state soldiers resze, es a kivalsztott katona IDja, a kivalasztott mezo x, y kkordinataja
-function moveSoldier(soldiers, id, x, y) {
+function moveSoldier(soldiers, id, x, y, clickedx, clickedy) {
   return soldiers.map((el) => {
     if (el.id === id) {
       return Object.assign({}, el, {
@@ -162,8 +169,7 @@ function fightFunction(soldiers, attacker, defender) {
       }
     });
     soldiers = moveSoldier(soldiers, attacker.id, defender.x, defender.y);
-  }
-  if (attacker.level < defender.level) {
+  } else if (attacker.level < defender.level) {
     //tamado veszit
     soldiers.forEach(function (v, index) {
       if (v.id === attacker.id) {
@@ -171,8 +177,7 @@ function fightFunction(soldiers, attacker, defender) {
         console.log("tamado veszit");
       }
     });
-  }
-  if (attacker.level === defender.level) {
+  } else if (attacker.level === defender.level) {
     // console.log("test");
     soldiers.forEach(function (v, index) {
       if (v.id === attacker.id) {
