@@ -28,6 +28,7 @@ function generateTableBody(soldiers, row, col, type, cellBonus, game) {
   let items2;
   let isSoldier = false;
   let sold = null;
+
   for (let x = cellBonus; x < row + cellBonus; x++) {
     items2 = [];
 
@@ -82,7 +83,6 @@ function GameField(props) {
   const soldiers = useSelector((state) => state.soldiers);
   const game = useSelector((state) => state.game);
   const items = generateTableBody(soldiers, row, col, type, cellBonus, game);
-
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">

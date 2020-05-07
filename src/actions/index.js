@@ -1,7 +1,6 @@
 export const FIGHT = "FIGHT";
 export const MOVE = "MOVE";
 export const GAME_OVER = "GAME_OVER";
-export const NEXT_PLAYER = "NEXT_PLAYER";
 export const SELECT_CELL = "SELECT_CELL";
 export const SELECT_SOLDIER = "SELECT_SOLDIER";
 export const GAME_STATUS_CHANGE = "GAME_STATUS_CHANGE";
@@ -33,30 +32,27 @@ export function startAgain() {
   };
 }
 
-export function nextPlayer(state) {
-  return {
-    type: NEXT_PLAYER,
-    payload: { state: state, isPlayerOne: !state.isPlayerOne },
-  };
-}
+// export function selectCell(state, type, x, y) {
+//   return {
+//     type: SELECT_CELL,
+//     payload: { state: state, type: type, currentX: x, currentY: y },
+//   };
+// }
 
-export function selectCell(state, type, x, y) {
-  return {
-    type: SELECT_CELL,
-    payload: { state: state, type: type, currentX: x, currentY: y },
-  };
-}
-
-export function selectSoldier(state, id) {
+export function selectSoldier(state, id, x, y) {
   return {
     type: SELECT_SOLDIER,
-    payload: { state: state, id: id },
+    payload: { state: state, id: id, selectedSoldierX: x, selectedSoldierY: y },
   };
 }
 
-export function gameStatusChange(state, status) {
+export function gameStatusChange(
+  state,
+  status,
+  currentPlayer = state.currentPlayer
+) {
   return {
     type: GAME_STATUS_CHANGE,
-    payload: { state: state, status: status },
+    payload: { state: state, status: status, currentPlayer: currentPlayer },
   };
 }

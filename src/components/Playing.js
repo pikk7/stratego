@@ -1,6 +1,6 @@
 import React from "react";
 import GameField from "./GameField";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import BombImg from "../img/bomb.svg";
 import CaptainImg from "../img/captain.svg";
 import ColonelImg from "../img/colonel.svg";
@@ -13,7 +13,32 @@ import MinerImg from "../img/miner.svg";
 import ScoutImg from "../img/scout.svg";
 import SergeantImg from "../img/sergeant.svg";
 import SpyImg from "../img/spy.svg";
+import { Button } from "@material-ui/core";
+import { gameStatusChange } from "../actions";
+import { withStyles } from "@material-ui/core/styles";
 
+const classes = {
+  button: {
+    background: "grey",
+    border: 0,
+    borderRadius: 3,
+    boxShadow: "0 3px 5px 2px rgba(0,0, 0 .3)",
+    color: "white",
+    height: 48,
+    padding: "0 30px",
+    margin: "30px",
+  },
+  redAction: {
+    background: "red",
+    border: 0,
+    borderRadius: 3,
+    boxShadow: "0 3px 5px 2px rgba(0,0, 0 .3)",
+    color: "white",
+    height: 48,
+    padding: "0 30px",
+    margin: "30px",
+  },
+};
 const arrayOfImg = [
   FlagImg, //0
   SpyImg, //1
@@ -28,11 +53,23 @@ const arrayOfImg = [
   MarshalImg, //10
   BombImg, //11
 ];
-export default function Playing() {
+function Playing() {
   const game = useSelector((state) => state.game);
+  const dispatch = useDispatch();
 
+  const playerOneFail = () => {
+    dispatch(gameStatusChange(game, "end", "2"));
+  };
+  const playerTwoFail = () => {
+    dispatch(gameStatusChange(game, "end", "1"));
+  };
+
+  let peopleOfPlayerOne = game.playerOneGraveyard.map((el) => el.steps > 0);
+  let peopleOfPlayerTwo = game.playerTwoGraveyard.map((el) => el.steps > 0);
+  let playerOneGivUp = peopleOfPlayerOne.length === 9;
+  let playerTwoGivUp = peopleOfPlayerTwo.length === 9;
   return (
-    <>
+    <div>
       {game.status === "playing" && (
         <>
           <strong>{game.currentPlayer} player</strong>
@@ -46,8 +83,8 @@ export default function Playing() {
                     <img
                       key={el.id}
                       alt={el.level}
-                      height="150"
-                      width="100"
+                      height="75"
+                      width="50"
                       src={arrayOfImg[el.level]}
                     />
                     {el.level}
@@ -67,8 +104,8 @@ export default function Playing() {
                     <img
                       key={el.id}
                       alt={el.level}
-                      height="150"
-                      width="100"
+                      height="75"
+                      width="50"
                       src={arrayOfImg[el.level]}
                     />
                     {el.level}
@@ -77,7 +114,22 @@ export default function Playing() {
               })}
             </>
           )}
+          <br></br>
+          <Button
+            style={playerTwoGivUp ? classes.redAction : classes.button}
+            disabled={game.currentPlayer === "1"}
+            onClick={playerTwoFail}
+          >
+            Feladom
+          </Button>
           <GameField cellBonus={0} type={"play"} row={6} col={6}></GameField>
+          <Button
+            style={playerOneGivUp ? classes.redAction : classes.button}
+            disabled={game.currentPlayer === "2"}
+            onClick={playerOneFail}
+          >
+            Feladom
+          </Button>
         </>
       )}
 
@@ -102,8 +154,10 @@ export default function Playing() {
         </>
       )}
       {game.status === "end" && (
-        <strong>{game.currentPlayer} is the winner</strong>
+        <strong>Player {game.currentPlayer} is the winner</strong>
       )}
-    </>
+    </div>
   );
 }
+
+export default withStyles(classes)(Playing);

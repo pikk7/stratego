@@ -42,7 +42,7 @@ export const soldiersData = [
     x: cellBonus + 0,
     y: cellBonus + 4,
     level: 8,
-    steps: 0,
+    steps: 1,
     owner: "1",
   }, //8as
   {
@@ -109,7 +109,7 @@ export const soldiersData = [
   { id: "16", x: 0, y: 1, level: 11, steps: 0, owner: "2" }, //bomba
   { id: "17", x: 0, y: 2, level: 11, steps: 0, owner: "2" }, //bomba
   { id: "18", x: 0, y: 3, level: 6, steps: 1, owner: "2" }, //6os
-  { id: "19", x: 0, y: 4, level: 8, steps: 0, owner: "2" }, //8as
+  { id: "19", x: 0, y: 4, level: 8, steps: 1, owner: "2" }, //8as
   { id: "20", x: 0, y: 5, level: 0, steps: 0, owner: "2" }, //zaszlo
   { id: "21", x: 1, y: 2, level: 2, steps: 10, owner: "2" }, //felderito
   { id: "22", x: 1, y: 0, level: 2, steps: 10, owner: "2" }, //felderito
@@ -159,24 +159,42 @@ function moveSoldier(soldiers, id, x, y, clickedx, clickedy) {
 function fightFunction(soldiers, attacker, defender) {
   if (attacker.level > defender.level) {
     if (defender.level === 0) {
-      //zaszlo
+      //zaszlo de felesleges
       won();
     }
     soldiers.forEach(function (v, index) {
       if (v.id === defender.id) {
         soldiers.splice(index, 1);
-        console.log("tamado gyoz");
+        // console.log("tamado gyoz");
       }
     });
     soldiers = moveSoldier(soldiers, attacker.id, defender.x, defender.y);
   } else if (attacker.level < defender.level) {
-    //tamado veszit
-    soldiers.forEach(function (v, index) {
-      if (v.id === attacker.id) {
-        soldiers.splice(index, 1);
-        console.log("tamado veszit");
-      }
-    });
+    //tamado veszit NAGY RESZT
+    if (attacker.level === 3 && defender.level === 11) {
+      soldiers.forEach(function (v, index) {
+        if (v.id === defender.id) {
+          soldiers.splice(index, 1);
+          // console.log("aknasz anat pucol");
+        }
+      });
+      soldiers = moveSoldier(soldiers, attacker.id, defender.x, defender.y);
+    } else if (attacker.level === 1 && defender.level === 10) {
+      soldiers.forEach(function (v, index) {
+        if (v.id === defender.id) {
+          soldiers.splice(index, 1);
+          // console.log("kem gyoz");
+        }
+      });
+      soldiers = moveSoldier(soldiers, attacker.id, defender.x, defender.y);
+    } else {
+      soldiers.forEach(function (v, index) {
+        if (v.id === attacker.id) {
+          soldiers.splice(index, 1);
+          // console.log("tamado veszit");
+        }
+      });
+    }
   } else if (attacker.level === defender.level) {
     // console.log("test");
     soldiers.forEach(function (v, index) {
@@ -189,7 +207,7 @@ function fightFunction(soldiers, attacker, defender) {
         soldiers.splice(index, 1);
       }
     });
-    console.log("mindektto veszit");
+    // console.log("mindektto veszit");
   }
 
   return soldiers;

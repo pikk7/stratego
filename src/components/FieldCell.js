@@ -29,6 +29,33 @@ const classes = {
     justifyContent: "center",
     alignItems: "center",
   },
+  selectedCell: {
+    borderTopWidth: 1,
+    borderColor: "black",
+    borderStyle: "solid",
+    borderBottomWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "grey",
+  },
+  freeCell: {
+    borderTopWidth: 1,
+    borderColor: "black",
+    borderStyle: "solid",
+    borderBottomWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "green",
+  },
+  attackCell: {
+    borderTopWidth: 1,
+    borderColor: "black",
+    borderStyle: "solid",
+    borderBottomWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "red",
+  },
 };
 const arrayOfImg = [
   FlagImg, //0
@@ -49,6 +76,82 @@ export default function FieldCell(props) {
   const dispatch = useDispatch();
   const soldiers = useSelector((state) => state.soldiers);
   const game = useSelector((state) => state.game);
+  const getSelected =
+    game.selectedSoldierX === x && game.selectedSoldierY === y;
+  let getFreeCell = false;
+  let getAttackCell = false;
+  if (game.status === "prepare") {
+    if (x === game.row - 2 || x === game.row - 1 || x === 11 || x === 10) {
+      getFreeCell = !isOwned;
+    }
+  }
+
+  if (game.status === "playing") {
+    if (game.id) {
+      const selectedCellSoldier = soldiers.find((el) => el.id === game.id);
+      //felderito kulon
+      if (selectedCellSoldier.level === 2) {
+        if (
+          (selectedCellSoldier.x <= x + selectedCellSoldier.steps &&
+            selectedCellSoldier.y === y) ||
+          (selectedCellSoldier.y <= y + selectedCellSoldier.steps &&
+            selectedCellSoldier.x === x) ||
+          (selectedCellSoldier.x >= x - selectedCellSoldier.steps &&
+            selectedCellSoldier.y === y) ||
+          (selectedCellSoldier.y >= y - selectedCellSoldier.steps &&
+            selectedCellSoldier.x === x)
+        ) {
+          if (isOwned) {
+            getAttackCell = game.currentPlayer !== owner;
+          }
+          getFreeCell = !isOwned;
+        }
+      } else {
+        if (
+          (selectedCellSoldier.x === x + selectedCellSoldier.steps &&
+            selectedCellSoldier.y === y) ||
+          (selectedCellSoldier.y === y + selectedCellSoldier.steps &&
+            selectedCellSoldier.x === x) ||
+          (selectedCellSoldier.x === x - selectedCellSoldier.steps &&
+            selectedCellSoldier.y === y) ||
+          (selectedCellSoldier.y === y - selectedCellSoldier.steps &&
+            selectedCellSoldier.x === x)
+        ) {
+          if (isOwned) {
+            getAttackCell = game.currentPlayer !== owner;
+          }
+          getFreeCell = !isOwned;
+        }
+      }
+    }
+  }
+
+  const manageFight = (clickedsoldier) => {
+    let attacker = soldiers.find((element) => element.id === game.id);
+    if (clickedsoldier.level === 0) {
+      dispatch(gameStatusChange(game, "end"));
+    } else {
+      let clickedsoldx, clickedsoldy;
+      soldiers.forEach((element) => {
+        if (element.id === game.id) {
+          clickedsoldx = element.x;
+          clickedsoldy = element.y;
+        }
+      });
+      let moveSold = soldiers.find((element) => element.id === game.id);
+
+      let xCoord = Math.abs(x - clickedsoldx) <= moveSold.steps; //xCoordibataban nem mozdul tobbet mint a lepes maximuma
+      let yCoord = Math.abs(y - clickedsoldy) <= moveSold.steps; //yCoordinataban nem mozdul tobbet mint a lepese
+      let diagonal = x === clickedsoldx || y === clickedsoldy; //ne lepjen diagonalisan
+
+      if (xCoord && yCoord && diagonal) {
+        dispatch(fight(soldiers, attacker, clickedsoldier));
+        setTimeout(() => {
+          dispatch(gameStatusChange(game, "playing", clickedsoldier.owner));
+        }, 3000);
+      }
+    }
+  };
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -64,16 +167,41 @@ export default function FieldCell(props) {
       }
     });
     if (isOwned) {
+      //nem ures a mezo
       if (game.id) {
+        //van kivalasztott babu
         if (clickedsoldier.owner !== game.currentPlayer) {
-          let attacker = soldiers.find((element) => element.id === game.id);
-          dispatch(fight(soldiers, attacker, clickedsoldier));
-          setTimeout(() => {
-            dispatch(gameStatusChange(game, "playing"));
-          }, 3000);
+          //masik jatekos babujara katintott es harc
+          manageFight(clickedsoldier);
+        }
+        if (clickedsoldier.owner === game.currentPlayer) {
+          //ha nincs tamadas, de masik SAJAT babura kattint, azt a babut vallasza ki
+          if (clickedsoldier.id === game.id) {
+            console.log("magamra kattintottam");
+            dispatch(selectSoldier(soldiers, "", null, null));
+          } else {
+            dispatch(
+              selectSoldier(
+                soldiers,
+                clickedsoldier.id,
+                clickedsoldier.x,
+                clickedsoldier.y
+              )
+            );
+          }
         }
       } else {
-        dispatch(selectSoldier(soldiers, clickedsoldier.id));
+        if (clickedsoldier.owner === game.currentPlayer) {
+          //csak az adott jatekos a sajat babujat tudja mozgatni
+          dispatch(
+            selectSoldier(
+              soldiers,
+              clickedsoldier.id,
+              clickedsoldier.x,
+              clickedsoldier.y
+            )
+          );
+        }
       }
     } else {
       if (game.id) {
@@ -85,17 +213,51 @@ export default function FieldCell(props) {
           }
         });
         if (game.status === "prepare") {
-          if (x === game.row - 2 || x === game.row - 1) {
+          //babuk elhelyezese keszulesi idoben
+          if (
+            x === game.row - 2 ||
+            x === game.row - 1 ||
+            x === 11 ||
+            x === 10
+          ) {
+            //csak a also 2 sorba es a kezbe lehessen tenni
             dispatch(move(soldiers, game.id, x, y, clickedsoldx, clickedsoldy));
           }
         } else {
-          dispatch(move(soldiers, game.id, x, y, clickedsoldx, clickedsoldy));
+          //babu mozgatas alapvetoen
+          //**itt meg meg kell oldani hogy ne ugraljon at */
+          let moveSold = soldiers.find((element) => element.id === game.id);
+
+          let xCoord = Math.abs(x - clickedsoldx) <= moveSold.steps; //xCoordibataban nem mozdul tobbet mint a lepes maximuma
+          let yCoord = Math.abs(y - clickedsoldy) <= moveSold.steps; //yCoordinataban nem mozdul tobbet mint a lepese
+          let diagonal = x === clickedsoldx || y === clickedsoldy;
+          // let inLineSoldiers = soldiers.filter(
+          //   (element) => element.x === x || element.y === y
+          // );
+          // inLineSoldiers = inLineSoldiers.map((e) => e.id);
+          console.log(
+            xCoord + " " + yCoord + " " + diagonal /* + " " + inLineSoldiers */
+          );
+          if (xCoord && yCoord && diagonal) {
+            dispatch(move(soldiers, game.id, x, y, clickedsoldx, clickedsoldy));
+          }
         }
       }
     }
   };
   return (
-    <TableCell onClick={handleClick} style={classes.cell}>
+    <TableCell
+      onClick={handleClick}
+      style={
+        getSelected
+          ? classes.selectedCell
+          : getAttackCell
+          ? classes.attackCell
+          : getFreeCell
+          ? classes.freeCell
+          : classes.cell
+      }
+    >
       {lvl !== undefined && (
         <div>
           <img

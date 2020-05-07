@@ -25,9 +25,9 @@ export default function PrepareGame() {
   const game = useSelector((state) => state.game);
   const soldiers = useSelector((state) => state.soldiers);
 
-  let allSoldiersInPlace = !soldiers.every(onBoard);
+  // let allSoldiersInPlace = !soldiers.every(onBoard);
   return (
-    <>
+    <div>
       <GameField type={"arena"} cellBonus={0} row={6} col={6}></GameField>
       <br></br>
       <GameField type={"zone"} cellBonus={10} row={2} col={8}></GameField>
@@ -36,11 +36,11 @@ export default function PrepareGame() {
         component={Link}
         to="/playing"
         style={classes.button}
-        disabled={allSoldiersInPlace}
+        disabled={!soldiers.every(onBoard)}
       >
         Ready
       </Button>
-    </>
+    </div>
   );
 }
 // export default withStyles(classes)(PrepareGame);

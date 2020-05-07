@@ -1,6 +1,6 @@
 import {
   GAME_OVER,
-  SELECT_CELL,
+  // SELECT_CELL,
   SELECT_SOLDIER,
   GAME_STATUS_CHANGE,
   MOVE,
@@ -11,6 +11,8 @@ export const gameData = {
   currentPlayer: "1",
   currentX: null,
   currentY: null,
+  selectedSoldierX: null,
+  selectedSoldierY: null,
   status: null,
   col: 6,
   row: 6,
@@ -18,6 +20,7 @@ export const gameData = {
   defender: "",
   playerOneGraveyard: [],
   playerTwoGraveyard: [],
+  id: null,
 };
 
 const game = (state = gameData, action) => {
@@ -26,17 +29,22 @@ const game = (state = gameData, action) => {
   switch (type) {
     case GAME_OVER:
       return gameOver(gameData);
-    case SELECT_CELL:
-      return selectCell(
-        state,
-        payload.type,
-        payload.currentX,
-        payload.currentY
-      );
+    // case SELECT_CELL:
+    //   return selectCell(
+    //     state,
+    //     payload.type,
+    //     payload.currentX,
+    //     payload.currentY
+    //   );
     case SELECT_SOLDIER:
-      return selectSoldier(state, payload.id);
+      return selectSoldier(
+        state,
+        payload.id,
+        payload.selectedSoldierX,
+        payload.selectedSoldierY
+      );
     case GAME_STATUS_CHANGE:
-      return gameStatusChange(state, payload.status);
+      return gameStatusChange(state, payload.status, payload.currentPlayer);
     case MOVE:
       return gameMove(state);
     case FIGHT:
@@ -46,31 +54,32 @@ const game = (state = gameData, action) => {
   }
 };
 
-function selectCell(state, type, currentX, currentY) {
-  return Object.assign({}, state, {
-    type: type,
-    currentX: currentX,
-    currentY: currentY,
-  });
-}
+// function selectCell(state, type, currentX, currentY) {
+//   return Object.assign({}, state, {
+//     type: type,
+//     currentX: currentX,
+//     currentY: currentY,
+//   });
+// }
 
-function selectSoldier(state, id) {
+function selectSoldier(state, id, x, y) {
   return Object.assign({}, state, {
     id: id,
+    selectedSoldierX: x,
+    selectedSoldierY: y,
   });
 }
 
 function gameOver(state) {
-  return Object.assign({}, state, {
-    gameOver: true,
-  });
+  return Object.assign({}, state, {});
 }
 
-function gameStatusChange(state, status) {
+function gameStatusChange(state, status, currentPlayer) {
   return Object.assign({}, state, {
     status: status,
     defender: "",
     attacker: "",
+    currentPlayer: currentPlayer,
   });
 }
 
@@ -78,10 +87,14 @@ function gameMove(state) {
   if (state.status === "prepare") {
     return Object.assign({}, state, {
       id: "",
+      selectedSoldierX: "",
+      selectedSoldierY: "",
     });
   } else {
     return Object.assign({}, state, {
       id: "",
+      selectedSoldierX: "",
+      selectedSoldierY: "",
       currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
     });
   }
@@ -97,7 +110,14 @@ function gameFight(state, attacker, defender) {
     if (attacker.level > defender.level) {
       die2 = defender;
     } else if (attacker.level < defender.level) {
-      die1 = attacker;
+      if (
+        (attacker.level === 3 && defender.level === 11) ||
+        (attacker.level === 1 && defender.level === 10)
+      ) {
+        die2 = defender;
+      } else {
+        die1 = attacker;
+      }
     } else {
       die1 = attacker;
       die2 = defender;
@@ -106,7 +126,14 @@ function gameFight(state, attacker, defender) {
     if (attacker.level > defender.level) {
       die1 = defender;
     } else if (attacker.level < defender.level) {
-      die2 = attacker;
+      if (
+        (attacker.level === 3 && defender.level === 11) ||
+        (attacker.level === 1 && defender.level === 10)
+      ) {
+        die1 = defender;
+      } else {
+        die2 = attacker;
+      }
     } else {
       die2 = attacker;
       die1 = defender;
@@ -118,6 +145,8 @@ function gameFight(state, attacker, defender) {
       attacker: attacker,
       defender: defender,
       id: "",
+      selectedSoldierX: "",
+      selectedSoldierY: "",
       status: "fighting",
       currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
       playerOneGraveyard: [...state.playerOneGraveyard, die1],
@@ -128,6 +157,8 @@ function gameFight(state, attacker, defender) {
       attacker: attacker,
       defender: defender,
       id: "",
+      selectedSoldierX: "",
+      selectedSoldierY: "",
       status: "fighting",
       currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
       playerTwoGraveyard: [...state.playerTwoGraveyard, die2],
@@ -137,6 +168,8 @@ function gameFight(state, attacker, defender) {
       attacker: attacker,
       defender: defender,
       id: "",
+      selectedSoldierX: "",
+      selectedSoldierY: "",
       status: "fighting",
       currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
       playerOneGraveyard: [...state.playerOneGraveyard, die1],
