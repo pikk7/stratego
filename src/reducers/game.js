@@ -5,6 +5,8 @@ import {
   GAME_STATUS_CHANGE,
   MOVE,
   FIGHT,
+  CREATE_ROOM,
+  JOIN_ROOM,
 } from "../actions";
 
 export const gameData = {
@@ -21,6 +23,8 @@ export const gameData = {
   playerOneGraveyard: [],
   playerTwoGraveyard: [],
   id: null,
+  roomId: "",
+  yourId: null,
 };
 
 const game = (state = gameData, action) => {
@@ -29,13 +33,6 @@ const game = (state = gameData, action) => {
   switch (type) {
     case GAME_OVER:
       return gameOver(gameData);
-    // case SELECT_CELL:
-    //   return selectCell(
-    //     state,
-    //     payload.type,
-    //     payload.currentX,
-    //     payload.currentY
-    //   );
     case SELECT_SOLDIER:
       return selectSoldier(
         state,
@@ -49,6 +46,10 @@ const game = (state = gameData, action) => {
       return gameMove(state);
     case FIGHT:
       return gameFight(state, payload.attacker, payload.defender);
+    case CREATE_ROOM:
+      return roomId(state, payload.roomId, "1");
+    case JOIN_ROOM:
+      return roomId(state, payload.roomId, "2");
     default:
       return state;
   }
@@ -101,9 +102,6 @@ function gameMove(state) {
 }
 
 function gameFight(state, attacker, defender) {
-  /**
-   * TODO: a specialis karakterek lekezelese
-   */
   let die1 = null;
   let die2 = null;
   if (state.currentPlayer === "1") {
@@ -148,7 +146,7 @@ function gameFight(state, attacker, defender) {
       selectedSoldierX: "",
       selectedSoldierY: "",
       status: "fighting",
-      currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
+      currentPlayer: state.currentPlayer.toString(),
       playerOneGraveyard: [...state.playerOneGraveyard, die1],
       playerTwoGraveyard: [...state.playerTwoGraveyard, die2],
     });
@@ -160,7 +158,7 @@ function gameFight(state, attacker, defender) {
       selectedSoldierX: "",
       selectedSoldierY: "",
       status: "fighting",
-      currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
+      currentPlayer: state.currentPlayer.toString(),
       playerTwoGraveyard: [...state.playerTwoGraveyard, die2],
     });
   } else if (die1) {
@@ -171,10 +169,17 @@ function gameFight(state, attacker, defender) {
       selectedSoldierX: "",
       selectedSoldierY: "",
       status: "fighting",
-      currentPlayer: ((state.currentPlayer % 2) + 1).toString(),
+      currentPlayer: state.currentPlayer.toString(),
       playerOneGraveyard: [...state.playerOneGraveyard, die1],
     });
   }
+}
+
+function roomId(state, roomId, yourId) {
+  return Object.assign({}, state, {
+    roomId: roomId,
+    yourId: yourId,
+  });
 }
 
 export default game;

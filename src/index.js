@@ -5,14 +5,16 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import strategoApp from "./reducers";
+import thunk from "redux-thunk";
 
 import { composeWithDevTools } from "redux-devtools-extension";
 import { createLogger } from "redux-logger";
 const logger = createLogger({ collapsed: true });
 const store = createStore(
   strategoApp,
-  composeWithDevTools(applyMiddleware(logger))
+  composeWithDevTools(applyMiddleware(thunk, logger))
 );
+
 ReactDOM.render(
   <Provider store={store}>
     <React.StrictMode>

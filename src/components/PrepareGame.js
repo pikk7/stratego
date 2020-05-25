@@ -4,6 +4,7 @@ import { Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { gameStatusChange } from "../actions";
+import { cellBOnusPlayerTwo, cellBonusPlayerOne } from "../reducers/soldier";
 
 const classes = {
   button: {
@@ -17,8 +18,13 @@ const classes = {
     margin: "30px",
   },
 };
-function onBoard(element) {
-  return element.x < 10 && element.y < 10;
+
+function onBoardPlayerTwo(element) {
+  return element.x > cellBOnusPlayerTwo && element.y > cellBOnusPlayerTwo;
+}
+
+function onBoardPlayerOne(element) {
+  return element.x < cellBonusPlayerOne && element.y < cellBonusPlayerOne;
 }
 export default function PrepareGame() {
   const dispatch = useDispatch();
@@ -28,15 +34,42 @@ export default function PrepareGame() {
   // let allSoldiersInPlace = !soldiers.every(onBoard);
   return (
     <div>
+      {game.yourId === "2" && (
+        <div>
+          <GameField
+            type={"zone"}
+            cellBonus={cellBOnusPlayerTwo}
+            row={2}
+            col={8}
+          ></GameField>
+        </div>
+      )}
+
+      <br></br>
       <GameField type={"arena"} cellBonus={0} row={6} col={6}></GameField>
       <br></br>
-      <GameField type={"zone"} cellBonus={10} row={2} col={8}></GameField>
+
+      {game.yourId === "1" && (
+        <div>
+          <GameField
+            type={"zone"}
+            cellBonus={cellBonusPlayerOne}
+            row={2}
+            col={8}
+          ></GameField>
+        </div>
+      )}
+
       <Button
-        onClick={() => dispatch(gameStatusChange(game, "playing"))}
+        onClick={() => dispatch(gameStatusChange(game, "playing", "1"))}
         component={Link}
         to="/playing"
         style={classes.button}
-        disabled={!soldiers.every(onBoard)}
+        disabled={
+          !soldiers.every(
+            game.currentPlayer === "1" ? onBoardPlayerOne : onBoardPlayerTwo
+          )
+        }
       >
         Ready
       </Button>

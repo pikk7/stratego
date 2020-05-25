@@ -3,68 +3,69 @@ import { FIGHT, GAME_OVER, MOVE } from "../actions";
 const won = () => {
   console.log("win");
 };
-let cellBonus = 10;
+export const cellBonusPlayerOne = 10;
+export const cellBOnusPlayerTwo = -10;
 export const soldiersData = [
   {
     id: "0",
-    x: cellBonus + 0,
-    y: cellBonus + 0,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 0,
     level: 1,
     steps: 1,
     owner: "1",
   }, //kem
   {
     id: "1",
-    x: cellBonus + 0,
-    y: cellBonus + 1,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 1,
     level: 11,
     steps: 0,
     owner: "1",
   }, //bomba
   {
     id: "2",
-    x: cellBonus + 0,
-    y: cellBonus + 2,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 2,
     level: 11,
     steps: 0,
     owner: "1",
   }, //bomba
   {
     id: "3",
-    x: cellBonus + 0,
-    y: cellBonus + 3,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 3,
     level: 6,
     steps: 1,
     owner: "1",
   }, //6os
   {
     id: "4",
-    x: cellBonus + 0,
-    y: cellBonus + 4,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 4,
     level: 8,
     steps: 1,
     owner: "1",
   }, //8as
   {
     id: "5",
-    x: cellBonus + 0,
-    y: cellBonus + 5,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 5,
     level: 0,
     steps: 0,
     owner: "1",
   }, //zaszlo
   {
     id: "6",
-    x: cellBonus + 0,
-    y: cellBonus + 6,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 6,
     level: 2,
     steps: 10,
     owner: "1",
   }, //felderito
   {
     id: "7",
-    x: cellBonus + 0,
-    y: cellBonus + 7,
+    x: cellBonusPlayerOne + 0,
+    y: cellBonusPlayerOne + 7,
     level: 2,
     steps: 10,
     owner: "1",
@@ -74,52 +75,136 @@ export const soldiersData = [
   // { id: "10", x: cellBonus + 1, y: cellBonus + 2, level: 7, steps: 1 , owner:"1" },
   {
     id: "11",
-    x: cellBonus + 1,
-    y: cellBonus + 3,
+    x: cellBonusPlayerOne + 1,
+    y: cellBonusPlayerOne + 3,
     level: 10,
     steps: 1,
     owner: "1",
   }, //10es
   {
     id: "12",
-    x: cellBonus + 1,
-    y: cellBonus + 4,
+    x: cellBonusPlayerOne + 1,
+    y: cellBonusPlayerOne + 4,
     level: 3,
     steps: 1,
     owner: "1",
   }, //aknasz
   {
     id: "13",
-    x: cellBonus + 1,
-    y: cellBonus + 5,
+    x: cellBonusPlayerOne + 1,
+    y: cellBonusPlayerOne + 5,
     level: 3,
     steps: 1,
     owner: "1",
   }, //aknasz
   {
     id: "14",
-    x: cellBonus + 1,
-    y: cellBonus + 6,
+    x: cellBonusPlayerOne + 1,
+    y: cellBonusPlayerOne + 6,
     level: 4,
     steps: 1,
     owner: "1",
   }, //4es
   //innentol a player ketto, o mar a tablara felteve
-  { id: "15", x: 0, y: 0, level: 1, steps: 1, owner: "2" }, //kem
-  { id: "16", x: 0, y: 1, level: 11, steps: 0, owner: "2" }, //bomba
-  { id: "17", x: 0, y: 2, level: 11, steps: 0, owner: "2" }, //bomba
-  { id: "18", x: 0, y: 3, level: 6, steps: 1, owner: "2" }, //6os
-  { id: "19", x: 0, y: 4, level: 8, steps: 1, owner: "2" }, //8as
-  { id: "20", x: 0, y: 5, level: 0, steps: 0, owner: "2" }, //zaszlo
-  { id: "21", x: 1, y: 2, level: 2, steps: 10, owner: "2" }, //felderito
-  { id: "22", x: 1, y: 0, level: 2, steps: 10, owner: "2" }, //felderito
+  {
+    id: "15",
+    x: cellBOnusPlayerTwo + 0,
+    y: cellBOnusPlayerTwo + 0,
+    level: 1,
+    steps: 1,
+    owner: "2",
+  }, //kem
+  {
+    id: "16",
+    x: cellBOnusPlayerTwo + 0,
+    y: cellBOnusPlayerTwo + 1,
+    level: 11,
+    steps: 0,
+    owner: "2",
+  }, //bomba
+  {
+    id: "17",
+    x: cellBOnusPlayerTwo + 0,
+    y: cellBOnusPlayerTwo + 2,
+    level: 11,
+    steps: 0,
+    owner: "2",
+  }, //bomba
+  {
+    id: "18",
+    x: cellBOnusPlayerTwo + 0,
+    y: cellBOnusPlayerTwo + 3,
+    level: 6,
+    steps: 1,
+    owner: "2",
+  }, //6os
+  {
+    id: "19",
+    x: cellBOnusPlayerTwo + 0,
+    y: cellBOnusPlayerTwo + 4,
+    level: 8,
+    steps: 1,
+    owner: "2",
+  }, //8as
+  {
+    id: "20",
+    x: cellBOnusPlayerTwo + 0,
+    y: cellBOnusPlayerTwo + 5,
+    level: 0,
+    steps: 0,
+    owner: "2",
+  }, //zaszlo
+  {
+    id: "21",
+    x: cellBOnusPlayerTwo + 1,
+    y: cellBOnusPlayerTwo + 2,
+    level: 2,
+    steps: 10,
+    owner: "2",
+  }, //felderito
+  {
+    id: "22",
+    x: cellBOnusPlayerTwo + 1,
+    y: cellBOnusPlayerTwo + 0,
+    level: 2,
+    steps: 10,
+    owner: "2",
+  }, //felderito
   // { id: "23", x: 1, y: 0, level: 9, steps: 1 , owner:"2" },
   // { id: "24", x: 1, y: 1, level: 5, steps: 1 , owner:"2" },
   // { id: "25", x: 1, y: 2, level: 7, steps: 1 , owner:"2" },
-  { id: "26", x: 1, y: 3, level: 10, steps: 1, owner: "2" }, //10es
-  { id: "27", x: 1, y: 4, level: 3, steps: 1, owner: "2" }, //aknasz
-  { id: "28", x: 1, y: 5, level: 3, steps: 1, owner: "2" }, //aknasz
-  { id: "29", x: 1, y: 1, level: 4, steps: 1, owner: "2" }, //4es
+  {
+    id: "26",
+    x: cellBOnusPlayerTwo + 1,
+    y: cellBOnusPlayerTwo + 3,
+    level: 10,
+    steps: 1,
+    owner: "2",
+  }, //10es
+  {
+    id: "27",
+    x: cellBOnusPlayerTwo + 1,
+    y: cellBOnusPlayerTwo + 4,
+    level: 3,
+    steps: 1,
+    owner: "2",
+  }, //aknasz
+  {
+    id: "28",
+    x: cellBOnusPlayerTwo + 1,
+    y: cellBOnusPlayerTwo + 5,
+    level: 3,
+    steps: 1,
+    owner: "2",
+  }, //aknasz
+  {
+    id: "29",
+    x: cellBOnusPlayerTwo + 1,
+    y: cellBOnusPlayerTwo + 1,
+    level: 4,
+    steps: 1,
+    owner: "2",
+  }, //4es
 ];
 const soldiers = (state = soldiersData, action) => {
   const { type, payload } = action;

@@ -10,8 +10,9 @@ import MenuList from "@material-ui/core/MenuList";
 import PrepareGame from "./components/PrepareGame";
 import { withStyles } from "@material-ui/core";
 import Playing from "./components/Playing";
-import { useSelector, useDispatch } from "react-redux";
-import { gameStatusChange, startAgain } from "./actions";
+import { useDispatch } from "react-redux";
+import { startAgain, thunk_createRoom } from "./actions";
+import { listening } from "./actions/index";
 const classes = {
   root: {
     backgroundColor: "#282c34",
@@ -28,8 +29,7 @@ const classes = {
 function App(props) {
   const { classes } = props;
   const dispatch = useDispatch();
-  const game = useSelector((state) => state.game);
-
+  listening(dispatch);
   return (
     <Router>
       <div className={classes.root}>
@@ -45,14 +45,16 @@ function App(props) {
             Szabályzat
           </MenuItem>
           <MenuItem
-            onClick={() => dispatch(gameStatusChange(game, "prepare"))}
+            onClick={() => {
+              dispatch(thunk_createRoom());
+            }}
             component={Link}
             to="/new-game"
           >
             Új játék
           </MenuItem>
           <MenuItem
-            onClick={() => dispatch(gameStatusChange(game, "prepare"))}
+            // onClick={() => dispatch(gameStatusChange(game, "prepare"))}
             component={Link}
             to="/join"
           >

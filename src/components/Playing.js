@@ -53,6 +53,7 @@ const arrayOfImg = [
   MarshalImg, //10
   BombImg, //11
 ];
+
 function Playing() {
   const game = useSelector((state) => state.game);
   const dispatch = useDispatch();
@@ -72,11 +73,13 @@ function Playing() {
     <div>
       {game.status === "playing" && (
         <>
-          <strong>{game.currentPlayer} player</strong>
+          <strong>{game.yourId} player </strong>
+          <br></br>
+          <strong>{game.currentPlayer} player kore</strong>
 
-          {game.playerOneGraveyard.length > 0 && (
+          {game.playerOneGraveyard.length > 0 && game.yourId === "2" && (
             <>
-              <p>Player 1 graveyard: </p>
+              <p>You killed them: </p>
               {game.playerOneGraveyard.map((el) => {
                 return (
                   <>
@@ -94,9 +97,9 @@ function Playing() {
             </>
           )}
 
-          {game.playerTwoGraveyard.length > 0 && (
+          {game.playerTwoGraveyard.length > 0 && game.yourId === "1" && (
             <>
-              <p>Player 2 graveyard: </p>
+              <p>You killed them: </p>
 
               {game.playerTwoGraveyard.map((el) => {
                 return (

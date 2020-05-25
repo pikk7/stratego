@@ -2,9 +2,10 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import { FormControl } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
-
+import { useDispatch, useSelector } from "react-redux";
+import { thunk_joinRoom } from "../actions";
+import PrepareGame from "../components/PrepareGame";
 const styles = {
   button: {
     background: "grey",
@@ -25,24 +26,47 @@ const styles = {
 };
 function JoinRoom(props) {
   const { classes } = props;
+  const game = useSelector((state) => state.game);
+  let roomId = "";
+  const dispatch = useDispatch();
+
+  const handlePrepare = () => {
+    dispatch(thunk_joinRoom(roomId));
+  };
+
+  const handleTextFieldChange = (e) => {
+    roomId = e.target.value;
+  };
 
   return (
     <div>
-      <FormControl>
-        <TextField
-          InputLabelProps={{
-            className: classes.floatingLabe,
-          }}
-          className={classes.textfield}
-          required
-          id="room-number"
-          label="Szóba kód"
-          variant="filled"
-        ></TextField>
-      </FormControl>
-      <Button component={Link} to="/prepare-game" className={classes.button}>
-        Prepare
-      </Button>
+      {game.status === "prepare" && <PrepareGame></PrepareGame>}
+      {game.status !== "prepare" && (
+        <div>
+          <FormControl>
+            <TextField
+              InputLabelProps={{
+                className: classes.floatingLabe,
+              }}
+              className={classes.textfield}
+              required
+              id="room-number"
+              label="Szóba kód"
+              variant="filled"
+              onChange={handleTextFieldChange}
+            ></TextField>
+          </FormControl>
+          <Button
+            onClick={handlePrepare}
+            // component={Link}
+            value={roomId}
+            // to="/prepare-game"
+            className={classes.button}
+          >
+            Join Room
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

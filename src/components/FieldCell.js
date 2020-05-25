@@ -80,8 +80,14 @@ export default function FieldCell(props) {
     game.selectedSoldierX === x && game.selectedSoldierY === y;
   let getFreeCell = false;
   let getAttackCell = false;
-  if (game.status === "prepare") {
+  if (game.status === "prepare" && game.currentPlayer === "1") {
     if (x === game.row - 2 || x === game.row - 1 || x === 11 || x === 10) {
+      getFreeCell = !isOwned;
+    }
+  }
+
+  if (game.status === "prepare" && game.currentPlayer === "2") {
+    if (x === 0 || x === 1 || x === -9 || x === -10) {
       getFreeCell = !isOwned;
     }
   }
@@ -129,7 +135,10 @@ export default function FieldCell(props) {
   const manageFight = (clickedsoldier) => {
     let attacker = soldiers.find((element) => element.id === game.id);
     if (clickedsoldier.level === 0) {
-      dispatch(gameStatusChange(game, "end"));
+      dispatch(fight(soldiers, attacker, clickedsoldier, game.roomId));
+      setTimeout(() => {
+        dispatch(gameStatusChange(game, "end"));
+      }, 3000);
     } else {
       let clickedsoldx, clickedsoldy;
       soldiers.forEach((element) => {
@@ -145,7 +154,7 @@ export default function FieldCell(props) {
       let diagonal = x === clickedsoldx || y === clickedsoldy; //ne lepjen diagonalisan
 
       if (xCoord && yCoord && diagonal) {
-        dispatch(fight(soldiers, attacker, clickedsoldier));
+        dispatch(fight(soldiers, attacker, clickedsoldier, game.roomId));
         setTimeout(() => {
           dispatch(gameStatusChange(game, "playing", clickedsoldier.owner));
         }, 3000);
@@ -177,7 +186,7 @@ export default function FieldCell(props) {
         if (clickedsoldier.owner === game.currentPlayer) {
           //ha nincs tamadas, de masik SAJAT babura kattint, azt a babut vallasza ki
           if (clickedsoldier.id === game.id) {
-            console.log("magamra kattintottam");
+            // console.log("magamra kattintottam");
             dispatch(selectSoldier(soldiers, "", null, null));
           } else {
             dispatch(
@@ -191,7 +200,10 @@ export default function FieldCell(props) {
           }
         }
       } else {
-        if (clickedsoldier.owner === game.currentPlayer) {
+        if (
+          clickedsoldier.owner === game.currentPlayer &&
+          clickedsoldier.owner === game.yourId
+        ) {
           //csak az adott jatekos a sajat babujat tudja mozgatni
           dispatch(
             selectSoldier(
@@ -212,7 +224,7 @@ export default function FieldCell(props) {
             clickedsoldy = element.y;
           }
         });
-        if (game.status === "prepare") {
+        if (game.status === "prepare" && game.currentPlayer === "1") {
           //babuk elhelyezese keszulesi idoben
           if (
             x === game.row - 2 ||
@@ -221,7 +233,33 @@ export default function FieldCell(props) {
             x === 10
           ) {
             //csak a also 2 sorba es a kezbe lehessen tenni
-            dispatch(move(soldiers, game.id, x, y, clickedsoldx, clickedsoldy));
+            dispatch(
+              move(
+                soldiers,
+                game.id,
+                x,
+                y,
+                clickedsoldx,
+                clickedsoldy,
+                game.roomId
+              )
+            );
+          }
+        }
+        if (game.status === "prepare" && game.currentPlayer === "2") {
+          if (x === 0 || x === 1 || x === -9 || x === -10) {
+            //csak a also 2 sorba es a kezbe lehessen tenni
+            dispatch(
+              move(
+                soldiers,
+                game.id,
+                x,
+                y,
+                clickedsoldx,
+                clickedsoldy,
+                game.roomId
+              )
+            );
           }
         } else {
           //babu mozgatas alapvetoen
@@ -235,11 +273,21 @@ export default function FieldCell(props) {
           //   (element) => element.x === x || element.y === y
           // );
           // inLineSoldiers = inLineSoldiers.map((e) => e.id);
-          console.log(
-            xCoord + " " + yCoord + " " + diagonal /* + " " + inLineSoldiers */
-          );
+          // console.log(
+          //   xCoord + " " + yCoord + " " + diagonal /* + " " + inLineSoldiers */
+          // );
           if (xCoord && yCoord && diagonal) {
-            dispatch(move(soldiers, game.id, x, y, clickedsoldx, clickedsoldy));
+            dispatch(
+              move(
+                soldiers,
+                game.id,
+                x,
+                y,
+                clickedsoldx,
+                clickedsoldy,
+                game.roomId
+              )
+            );
           }
         }
       }
@@ -263,10 +311,10 @@ export default function FieldCell(props) {
           <img
             height="150"
             width="100"
-            src={game.currentPlayer === owner ? arrayOfImg[lvl] : question}
-            alt={game.currentPlayer === owner ? lvl : "?"}
+            src={game.yourId === owner ? arrayOfImg[lvl] : question}
+            alt={game.yourId === owner ? lvl : "?"}
           />
-          <strong>{game.currentPlayer === owner ? lvl : "?"}</strong>
+          <strong>{game.yourId === owner ? lvl : "?"}</strong>
         </div>
       )}
     </TableCell>

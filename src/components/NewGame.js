@@ -1,9 +1,10 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core";
-
+import { thunk_createRoom } from "../actions";
 const classes = {
   button: {
     background: "grey",
@@ -17,20 +18,25 @@ const classes = {
   },
 };
 
-function getRoomNum(min, max) {
-  return "#" + (Math.floor(Math.random() * (max - min)) + min);
-}
-function Lobby(props) {
+function NewGame(props) {
   const { classes } = props;
+  const dispatch = useDispatch();
+  const game = useSelector((state) => state.game);
 
+  function getRoomNum() {
+    dispatch(thunk_createRoom);
+  }
+
+  getRoomNum();
   return (
     <>
-      <h1>{getRoomNum(0, 999)}</h1>
+      <h1>A szoba kodja:</h1>
+      <div>{game.roomId}</div>
       <Button component={Link} to="/prepare-game" className={classes.button}>
-        Prepare
+        Create Room
       </Button>
     </>
   );
 }
 
-export default withStyles(classes)(Lobby);
+export default withStyles(classes)(NewGame);
